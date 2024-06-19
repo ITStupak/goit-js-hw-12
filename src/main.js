@@ -10,11 +10,12 @@ import imageUrl from './img/icon-error.svg';
 
 const form = document.querySelector('.form');
 const gallery = document.querySelector('.gallery');
-const moreBtn = document.querySelector('.load-more-btn');
+const moreBtn = document.querySelector('.load-btn');
+console.log(moreBtn);
 
 form.addEventListener('submit', sendUserRequest);
             
-function sendUserRequest(e) {
+async function sendUserRequest(e) {
     e.preventDefault();
     
     const userData = e.target.elements.request.value.trim();
@@ -25,8 +26,8 @@ function sendUserRequest(e) {
         loader.style.display = 'block';
         moreBtn.classList.remove('is-visible');
         
-        getImages(userData)
-            .then(data => {
+        try {
+            const data = await getImages(userData)
                 if (data.total !== 0) {
                     const markup = createImagesList(data);
                     gallery.insertAdjacentHTML('beforeend', markup);
@@ -45,12 +46,10 @@ function sendUserRequest(e) {
                     });
                     lightbox.refresh();
                     
-                    const imageLoadPromises = Array.from(gallery.querySelectorAll('img')).map(image =>
-                        new Promise(resolve => {
+                    const imageLoadPromises = Array.from(gallery.querySelectorAll('img')).map(image => new Promise(resolve => {
                             image.onload = resolve;
-                        })
-                    );
-                    return Promise.all(imageLoadPromises);
+                        }));
+                    await Promise.all(imageLoadPromises);
                     
                 } else {
                     console.log('Sorry, there are no images matching your search query. Please try again!');
@@ -74,13 +73,12 @@ function sendUserRequest(e) {
                         iconColor: '#fafafb',
                     });
                 }
-            })
-            .then(() => loader.style.display = 'none')
-            .then(() => moreBtn.classList.add('is-visible'))
-            .catch((error) => {
-                console.log(error);
-                loader.style.display = 'none';
-            })
+        } catch (err) {
+            console.log(err);            
+        } finally {
+            loader.style.display = 'none'
+            moreBtn.classList.add('is-visible')
+        }  
         form.reset();
     } else {
         console.log('Enter your Request!');
@@ -104,12 +102,12 @@ function sendUserRequest(e) {
                         iconUrl: imageUrl,
                         iconColor: '#fafafb',
                         timeout: 3000,
-                    });
-     }
+        });
+    }
 }
 
-// moreBtn.addEventListener('submit', newUserRequest);
+// moreBtn.addEventListener('submit', (e) => {
+//     e.preventDefault();
+//     console.log('Нужны еще фотки!');
+// });
 
-// function newUserRequest(e) {
-//     e.preventDefault();    
-// }

@@ -40,7 +40,7 @@
   letter-spacing: 0.04em;
   color: #808080;
 }
-.load-more-btn {
+.load-btn {
   display: none;
   margin: 0 auto;
 }
@@ -49,7 +49,7 @@
   margin-bottom: 24px;
 }
 .search-btn,
-.load-more-btn {
+.load-btn {
   border-radius: 8px;
   border: none;
   padding: 8px 16px;
@@ -63,7 +63,7 @@
   color: #ffffff;
 }
 .search-btn:hover,
-.load-more-btn:hover {
+.load-btn:hover {
   background-color: #6c8cff;
 }
 /* Insert Loader from cssloaders.github.io */
