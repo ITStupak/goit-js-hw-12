@@ -10,6 +10,7 @@ import imageUrl from './img/icon-error.svg';
 
 const form = document.querySelector('.form');
 const gallery = document.querySelector('.gallery');
+const moreBtn = document.querySelector('.load-more-btn');
 
 form.addEventListener('submit', sendUserRequest);
             
@@ -22,6 +23,7 @@ function sendUserRequest(e) {
 
         const loader = document.querySelector('.loader');
         loader.style.display = 'block';
+        moreBtn.classList.remove('is-visible');
         
         getImages(userData)
             .then(data => {
@@ -44,9 +46,9 @@ function sendUserRequest(e) {
                     lightbox.refresh();
                     
                     const imageLoadPromises = Array.from(gallery.querySelectorAll('img')).map(image =>
-                    new Promise(resolve => {
-                        image.onload = resolve;
-                    })
+                        new Promise(resolve => {
+                            image.onload = resolve;
+                        })
                     );
                     return Promise.all(imageLoadPromises);
                     
@@ -56,7 +58,7 @@ function sendUserRequest(e) {
                         message: 'Sorry, there are no images matching your search query. Please try again!',
                         messageSize: '16',
                         messageLineHeight: '1,5',
-                        messageColor: '#fafafb',        
+                        messageColor: '#fafafb',
                         backgroundColor: '#ef4040',
                         imageWidth: 302,
                         position: 'topRight',
@@ -71,9 +73,10 @@ function sendUserRequest(e) {
                         iconUrl: imageUrl,
                         iconColor: '#fafafb',
                     });
-                 }
+                }
             })
             .then(() => loader.style.display = 'none')
+            .then(() => moreBtn.classList.add('is-visible'))
             .catch((error) => {
                 console.log(error);
                 loader.style.display = 'none';
@@ -104,3 +107,9 @@ function sendUserRequest(e) {
                     });
      }
 }
+
+// moreBtn.addEventListener('submit', newUserRequest);
+
+// function newUserRequest(e) {
+//     e.preventDefault();    
+// }
