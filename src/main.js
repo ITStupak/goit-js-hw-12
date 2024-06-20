@@ -11,7 +11,6 @@ import imageUrl from './img/icon-error.svg';
 const form = document.querySelector('.form');
 const gallery = document.querySelector('.gallery');
 const moreBtn = document.querySelector('.load-btn');
-console.log(moreBtn);
 
 form.addEventListener('submit', sendUserRequest);
             
@@ -47,10 +46,9 @@ async function sendUserRequest(e) {
                     lightbox.refresh();
                     
                     const imageLoadPromises = Array.from(gallery.querySelectorAll('img')).map(image => new Promise(resolve => {
-                            image.onload = resolve;
-                        }));
-                    await Promise.all(imageLoadPromises);
-                    
+                        image.onload = resolve;
+                    }));
+                    await Promise.all(imageLoadPromises);                    
                 } else {
                     console.log('Sorry, there are no images matching your search query. Please try again!');
                     iziToast.error({
@@ -76,8 +74,8 @@ async function sendUserRequest(e) {
         } catch (err) {
             console.log(err);            
         } finally {
-            loader.style.display = 'none'
-            moreBtn.classList.add('is-visible')
+            loader.style.display = 'none';
+            moreBtn.classList.add('is-visible');
         }  
         form.reset();
     } else {
