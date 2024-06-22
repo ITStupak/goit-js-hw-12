@@ -1,14 +1,14 @@
 @import url('./reset.css');
 
-.title {
+/* .title {
   font-size: 28px;
   color: tomato;
   margin: 10px 0;
-}
+} */
 /* Default Form styles */
 
 .form {
-  margin: 0 auto;
+  margin: 16px auto;
   display: flex;
   justify-content: center;
   gap: 8px;
@@ -17,12 +17,12 @@
 .search-input {
   border: 1px solid #808080;
   border-radius: 4px;
-  background-color: #ffffff;
   width: 240px;
   height: 24px;
   padding: 8px 16px;
   font-family: inherit;
   font-size: 16px;
+  transition: 500ms;
 }
 .search-input:hover {
   border: 1px solid #000000;
@@ -31,6 +31,7 @@
   border: 1px solid #4e75ff;
   outline: none;
   color: #2e2f42;
+  background-color: white;
 }
 ::placeholder {
   font-family: Montserrat, sans-serif;
@@ -40,6 +41,7 @@
   letter-spacing: 0.04em;
   color: #808080;
 }
+
 .load-btn {
   display: none;
   margin: 0 auto;
@@ -61,6 +63,7 @@
   line-height: 1.5;
   letter-spacing: 0.04em;
   color: #ffffff;
+  transition: 500ms;
 }
 .search-btn:hover,
 .load-btn:hover {
