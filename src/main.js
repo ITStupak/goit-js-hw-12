@@ -69,6 +69,14 @@ function updateStatusBtn() {
                 });
     } else { showLoadBtn(); }
 }
+function scrollToNextPage() {
+    const liElem = gallery.children[0];
+    const height = liElem.getBoundingClientRect().height;
+    scrollBy({
+        top: height * 3,
+        behavior: 'smooth',
+    });
+}
 
 form.addEventListener('submit', sendUserRequest);           
 async function sendUserRequest(e) {
@@ -80,17 +88,17 @@ async function sendUserRequest(e) {
         gallery.innerHTML = '';
         showLoader();
         hideLoadBtn();        
-        try {
-            const data = await getImages(userData, currentPage);
-            maxPage = Math.ceil(data.totalHits / perPage);
-            if (data.total !== 0) {
-                const markup = createImagesList(data);
-                gallery.insertAdjacentHTML('beforeend', markup);
-                lightbox.refresh();
-                await loadAllImages();
-            } else {
-                console.log('Sorry, there are no images matching your search query. Please try again!');
-                iziToast.error({
+    try {
+        const data = await getImages(userData, currentPage);
+        maxPage = Math.ceil(data.totalHits / perPage);
+        if (data.total !== 0) {
+            const markup = createImagesList(data);
+            gallery.insertAdjacentHTML('beforeend', markup);
+            lightbox.refresh();
+            await loadAllImages();
+        } else {
+            console.log('Sorry, there are no images matching your search query. Please try again!');
+            iziToast.error({
                     message: 'Sorry, there are no images matching your search query. Please try again!',
                     messageSize: '16',
                     messageLineHeight: '1,5',
@@ -108,14 +116,14 @@ async function sendUserRequest(e) {
                     transitionOut: 'fadeOutUp',
                     iconUrl: imageUrlError,
                     iconColor: '#fafafb',
-                });
-            }
-        } catch (err) {
-            console.log(err);
-        }                   
-        hideLoader();
-        updateStatusBtn()
-        form.reset();
+            });
+        }
+    } catch {
+        console.log('Error');
+    }                   
+    hideLoader();
+    updateStatusBtn()
+    form.reset();
     } else {
         console.log('Enter your Request!');
         iziToast.error({
@@ -146,12 +154,19 @@ async function sendUserRequest(e) {
 
 moreBtn.addEventListener('click', newRequest);   
 async function newRequest() {
+    currentPage++;
     hideLoadBtn();
     showLoader();
-    currentPage++;
-    const data = await getImages(userData, currentPage);
-    gallery.insertAdjacentHTML('beforeend', createImagesList(data));
-    lightbox.refresh();
+
+    try {
+        const data = await getImages(userData, currentPage);
+        const markup = createImagesList(data);
+        gallery.insertAdjacentHTML('beforeend', markup);
+        lightbox.refresh();
+    } catch {
+        console.log('Error');
+    }
+    scrollToNextPage();
     loadAllImages();
     hideLoader();
     updateStatusBtn();
