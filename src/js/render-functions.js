@@ -3,13 +3,10 @@ function createImage(image) {
   let { largeImageURL, webformatURL, tags, comments, downloads, likes, views } = image;
   return `<li class="gallery-item">
     <a class="gallery-link" href=${largeImageURL}>
-      <img
-        class="gallery-image"
-        src=${webformatURL}
-        alt=${tags}
-      />
-    </a>
-    <ul class="gallery-text">
+      <div class="img-box">
+          <img class="gallery-image" src="${webformatURL}" alt="${tags}" />
+      </div>
+      <ul class="gallery-text">
       <li class="gallery-text-property">
         <p class="gallery-text-dscr">Likes</p>
         <p class="gallery-text-count">${likes}</p>
@@ -26,11 +23,11 @@ function createImage(image) {
         <p class="gallery-text-dscr">Downloads</p>
         <p class="gallery-text-count">${downloads}</p>
       </li>
-    </ul> 
+    </ul>
+    </a>     
   </li>`;
 };
 
-export function createImagesList(data) {
-  const arr = data.hits;
-  return arr.map(createImage).join('');
+export function createImagesList(images) {
+  return images.map(createImage).join('');
 };

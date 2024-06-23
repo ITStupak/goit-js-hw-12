@@ -37,7 +37,7 @@ const lightbox = new SimpleLightbox('.gallery-item a', {
     heightRatio: 0.95,
     disableRightClick: true,
 });
-function loadAllImages() {
+async function loadAllImages() {
     const imageLoadPromises = Array.from(gallery.querySelectorAll('img')).map(image => new Promise(resolve => {
         image.onload = resolve;
     })); return Promise.all(imageLoadPromises);
@@ -82,8 +82,8 @@ function scrollDown() {
     const liElem = gallery.children[0];
     const height = liElem.getBoundingClientRect().height;
     window.scrollBy({
-        top: (height * 2),
-        behavior: 'smooth'
+        top: height*2,
+        behavior: 'smooth',
     });
 }
 
@@ -152,7 +152,7 @@ form.addEventListener('submit', async (e) => {
             return;
         }
         
-        const markup = createImagesList(data);
+        const markup = createImagesList(data.hits);
         gallery.innerHTML = markup;
         lightbox.refresh();
         await loadAllImages();
@@ -174,11 +174,11 @@ moreBtn.addEventListener('click', async () => {
     
     try {
         const data = await getImages(userData, currentPage);
-        const markup = createImagesList(data);
+        const markup = createImagesList(data.hits);
         gallery.insertAdjacentHTML('beforeend', markup);        
         lightbox.refresh();
 
-        scrollDown();//не працює (рандомно спрацьовує, якось дивно...)
+        scrollDown();
         
     } catch {
         console.log('Error');

@@ -12,7 +12,6 @@ export async function getImages(userData, currentPage) {
             page: currentPage,
         }    
         const res = await axios.get('', { params });
-        
         return res.data;
     } catch (err) {
         console.error(err);
