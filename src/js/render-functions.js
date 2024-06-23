@@ -1,5 +1,6 @@
 
-function createImage({ largeImageURL, webformatURL, tags, comments, downloads, likes, views }) {
+function createImage(image) {
+  let { largeImageURL, webformatURL, tags, comments, downloads, likes, views } = image;
   return `<li class="gallery-item">
     <a class="gallery-link" href=${largeImageURL}>
       <img

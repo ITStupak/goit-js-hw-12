@@ -9,33 +9,38 @@ import "izitoast/dist/css/iziToast.min.css";
 import imageUrlError from './img/icon-error.svg';
 import imageUrlInfo from './img/icon-attention.svg';
 
+//!======================================================
+
 const form = document.querySelector('.form');
 const gallery = document.querySelector('.gallery');
 const moreBtn = document.querySelector('.load-btn');
 const loader = document.querySelector('.loader');
 
+//!======================================================
+
 let userData = '';
 let currentPage = 1;
-const perPage = 15;
 let maxPage = 1;
+const perPage = 15;
+
+//!======================================================
 
 const lightbox = new SimpleLightbox('.gallery-item a', {
-                    captions: true,
-                    captionSelector: 'img',
-                    captionType: 'attr',
-                    captionsData: 'alt',
-                    captionPosition: 'bottom',
-                    captionDelay: 500,
-                    animationSpeed: 200,
-                    widthRatio: 1,
-                    heightRatio: 0.95,
-                    disableRightClick: true,
+    captions: true,
+    captionSelector: 'img',
+    captionType: 'attr',
+    captionsData: 'alt',
+    captionPosition: 'bottom',
+    captionDelay: 500,
+    animationSpeed: 200,
+    widthRatio: 1,
+    heightRatio: 0.95,
+    disableRightClick: true,
 });
-async function loadAllImages() {
+function loadAllImages() {
     const imageLoadPromises = Array.from(gallery.querySelectorAll('img')).map(image => new Promise(resolve => {
         image.onload = resolve;
-    }));
-    await Promise.all(imageLoadPromises);
+    })); return Promise.all(imageLoadPromises);
 }
 function showLoader() {
     loader.style.display = 'block';
@@ -47,12 +52,13 @@ function showLoadBtn() {
     moreBtn.classList.add('is-visible');
 }
 function hideLoadBtn() {
-    moreBtn.classList.remove('is-visible'); 
+    moreBtn.classList.remove('is-visible');
 }
 function updateStatusBtn() {
     if (currentPage >= maxPage) {
         hideLoadBtn();
-        iziToast.info({
+        if (maxPage) {
+            iziToast.info({
                     message: "We're sorry, but you've reached the end of search results.",
                     messageSize: '16',
                     messageLineHeight: '1,5',
@@ -66,66 +72,28 @@ function updateStatusBtn() {
                     transitionOut: 'fadeOutUp',
                     iconUrl: imageUrlInfo,
                     iconColor: '#fafafb',
-                });
-    } else { showLoadBtn(); }
+            });
+        }
+    } else {
+        showLoadBtn();
+    }
 }
-function scrollToNextPage() {
+function scrollDown() {
     const liElem = gallery.children[0];
     const height = liElem.getBoundingClientRect().height;
-    scrollBy({
-        top: height * 3,
-        behavior: 'smooth',
+    window.scrollBy({
+        top: (height * 2),
+        behavior: 'smooth'
     });
 }
 
-form.addEventListener('submit', sendUserRequest);           
-async function sendUserRequest(e) {
+//!======================================================
+
+form.addEventListener('submit', async (e) => {
     e.preventDefault();
     userData = e.target.elements.request.value.trim();
-    currentPage = 1;
 
-    if (userData !== '') {       
-        gallery.innerHTML = '';
-        showLoader();
-        hideLoadBtn();        
-    try {
-        const data = await getImages(userData, currentPage);
-        maxPage = Math.ceil(data.totalHits / perPage);
-        if (data.total !== 0) {
-            const markup = createImagesList(data);
-            gallery.insertAdjacentHTML('beforeend', markup);
-            lightbox.refresh();
-            await loadAllImages();
-        } else {
-            console.log('Sorry, there are no images matching your search query. Please try again!');
-            iziToast.error({
-                    message: 'Sorry, there are no images matching your search query. Please try again!',
-                    messageSize: '16',
-                    messageLineHeight: '1,5',
-                    messageColor: '#fafafb',
-                    backgroundColor: '#ef4040',
-                    imageWidth: 302,
-                    position: 'topRight',
-                    theme: 'dark',
-                    close: true,
-                    closeOnEscape: true,
-                    closeOnClick: true,
-                    progressBar: true,
-                    progressBarColor: '#b51b1b',
-                    transitionIn: 'fadeInDown',
-                    transitionOut: 'fadeOutUp',
-                    iconUrl: imageUrlError,
-                    iconColor: '#fafafb',
-            });
-        }
-    } catch {
-        console.log('Error');
-    }                   
-    hideLoader();
-    updateStatusBtn()
-    form.reset();
-    } else {
-        console.log('Enter your Request!');
+    if (!userData) {
         iziToast.error({
                         title: 'Error!',
                         titleColor: '#fafafb', 
@@ -147,28 +115,74 @@ async function sendUserRequest(e) {
                         iconColor: '#fafafb',
                         timeout: 3000,
         });
-        hideLoadBtn(); 
-        gallery.innerHTML = '';
+        return;
     }
-}
 
-moreBtn.addEventListener('click', newRequest);   
-async function newRequest() {
+    currentPage = 1;
+    showLoader();
+    hideLoadBtn();
+    
+    try {
+        const data = await getImages(userData, currentPage);
+        maxPage = Math.ceil(data.totalHits / perPage);
+        
+        if (maxPage === 0) {
+            iziToast.error({
+                    message: 'Sorry, there are no images matching your search query. Please try again!',
+                    messageSize: '16',
+                    messageLineHeight: '1,5',
+                    messageColor: '#fafafb',
+                    backgroundColor: '#ef4040',
+                    imageWidth: 302,
+                    position: 'topRight',
+                    theme: 'dark',
+                    close: true,
+                    closeOnEscape: true,
+                    closeOnClick: true,
+                    progressBar: true,
+                    progressBarColor: '#b51b1b',
+                    transitionIn: 'fadeInDown',
+                    transitionOut: 'fadeOutUp',
+                    iconUrl: imageUrlError,
+                    iconColor: '#fafafb',
+            });
+            hideLoader();
+            updateStatusBtn();
+            form.reset();
+            return;
+        }
+        
+        const markup = createImagesList(data);
+        gallery.innerHTML = markup;
+        lightbox.refresh();
+        await loadAllImages();
+    } catch (err) {
+        console.log(err);
+    }
+
+    hideLoader();
+    updateStatusBtn();
+    form.reset();
+});
+
+//!======================================================
+
+moreBtn.addEventListener('click', async () => {
     currentPage++;
     hideLoadBtn();
     showLoader();
-
+    
     try {
         const data = await getImages(userData, currentPage);
         const markup = createImagesList(data);
-        gallery.insertAdjacentHTML('beforeend', markup);
+        gallery.insertAdjacentHTML('beforeend', markup);        
         lightbox.refresh();
+
+        scrollDown();//не працює (рандомно спрацьовує, якось дивно...)
+        
     } catch {
         console.log('Error');
     }
-    scrollToNextPage();
-    loadAllImages();
-    hideLoader();
     updateStatusBtn();
-};
-
+    hideLoader();
+});
