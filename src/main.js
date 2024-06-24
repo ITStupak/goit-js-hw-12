@@ -7,7 +7,7 @@ import "simplelightbox/dist/simple-lightbox.min.css";
 import iziToast from "izitoast";
 import "izitoast/dist/css/iziToast.min.css";
 import imageUrlError from './img/icon-error.svg';
-import imageUrlInfo from './img/icon-attention.svg';
+import imageUrlInfo from './img/Oops.png';
 
 //!======================================================
 
@@ -40,7 +40,7 @@ const lightbox = new SimpleLightbox('.gallery-item a', {
 async function loadAllImages() {
     const imageLoadPromises = Array.from(gallery.querySelectorAll('img')).map(image => new Promise(resolve => {
         image.onload = resolve;
-    })); return Promise.all(imageLoadPromises);
+    })); await Promise.all(imageLoadPromises);
 }
 function showLoader() {
     loader.style.display = 'block';
@@ -66,6 +66,8 @@ function updateStatusBtn() {
                     backgroundColor: '#d6e288',
                     position: 'bottomRight',
                     close: true,
+                    closeOnClick: true,
+                    closeOnEscape: true,
                     progressBar: true,
                     progressBarColor: '#9aa406',
                     transitionIn: 'fadeInDown',
@@ -101,7 +103,6 @@ form.addEventListener('submit', async (e) => {
                         messageSize: '16',
                         messageColor: '#fafafb',        
                         backgroundColor: '#ef4040',
-                        imageWidth: 432,
                         position: 'topRight',
                         theme: 'dark',
                         close: true,
@@ -133,7 +134,6 @@ form.addEventListener('submit', async (e) => {
                     messageLineHeight: '1,5',
                     messageColor: '#fafafb',
                     backgroundColor: '#ef4040',
-                    imageWidth: 302,
                     position: 'topRight',
                     theme: 'dark',
                     close: true,
@@ -157,15 +157,13 @@ form.addEventListener('submit', async (e) => {
         lightbox.refresh();
         await loadAllImages();
     } catch (err) {
-        console.log(err);
+        console.log(`Error: ${err}`);
     }
 
     hideLoader();
     updateStatusBtn();
     form.reset();
 });
-
-//!======================================================
 
 moreBtn.addEventListener('click', async () => {
     currentPage++;
@@ -177,11 +175,9 @@ moreBtn.addEventListener('click', async () => {
         const markup = createImagesList(data.hits);
         gallery.insertAdjacentHTML('beforeend', markup);        
         lightbox.refresh();
-
-        scrollDown();
-        
+        scrollDown();        
     } catch {
-        console.log('Error');
+        console.log(`Error: ${err}`);
     }
     updateStatusBtn();
     hideLoader();

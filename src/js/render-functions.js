@@ -1,9 +1,8 @@
-
 function createImage(image) {
   let { largeImageURL, webformatURL, tags, comments, downloads, likes, views } = image;
   return `<li class="gallery-item">
     <a class="gallery-link" href=${largeImageURL}>
-      <div class="img-box">
+      <div class="img-container">
           <img class="gallery-image" src="${webformatURL}" alt="${tags}" />
       </div>
       <ul class="gallery-text">
